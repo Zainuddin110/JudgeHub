@@ -1,0 +1,48 @@
+{
+  "common": {
+    "appName": "JudgeHub",
+    "tagline": "Dynamic, fair, and fully configurable judging platform",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "createOrg": "Create Organization",
+    "dashboard": "Dashboard",
+    "organizations": "Organizations",
+    "auditTrail": "Audit Trail",
+    "status": "Status",
+    "actions": "Actions",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "auth": {
+    "loginTitle": "Welcome to JudgeHub",
+    "loginSubtitle": "Enter your email to receive a secure one-time passcode.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "sendOtp": "Send Passcode",
+    "codeLabel": "6-Digit Passcode",
+    "verifyAndSignIn": "Verify & Sign In",
+    "resend": "Resend Code",
+    "devHint": "Dev Mode: OTP is automatically generated and displayed below for testing."
+  },
+  "org": {
+    "newTitle": "Create New Organization",
+    "newSubtitle": "Set up your tenant space for running competitions and evaluation rounds.",
+    "nameLabel": "Organization Name",
+    "namePlaceholder": "e.g. Acme Innovations",
+    "slugLabel": "Organization URL Slug",
+    "slugPlaceholder": "acme-innovations",
+    "createButton": "Create Organization"
+  },
+  "audit": {
+    "title": "Immutable Audit Log",
+    "subtitle": "Cryptographically SHA-256 hash-chained log of all organizational actions.",
+    "integrityVerified": "Chain Integrity Verified",
+    "integrityCorrupted": "Chain Tamper Detected",
+    "action": "Action",
+    "actor": "Actor",
+    "resource": "Resource",
+    "timestamp": "Timestamp",
+    "hash": "Hash"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "judgehub-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r --filter \"@judgehub/*\" build && pnpm --filter @judgehub/web build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "pnpm -r lint",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "dev": "pnpm --filter @judgehub/web dev",
+    "db:push": "pnpm --filter @judgehub/db push",
+    "db:seed": "pnpm --filter @judgehub/db seed"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}
