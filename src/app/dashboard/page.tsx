@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getCurrentSession } from "@/lib/session";
-import { memoryDb, StoredAuditRecord } from "@/db";
+import { getCurrentSession, SessionOrg } from "@/lib/session";
+import { memoryDb } from "@/db/repository";
+import { verifyAuditChainIntegrity, StoredAuditRecord } from "@/db/audit";
 import {
   Building2,
   Plus,
@@ -19,10 +20,39 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const user = memoryDb.findUserById(session.userId);
-  const organizations = memoryDb.listOrganizationsForUser(session.userId);
-  const auditLogs = memoryDb.listAuditLogs().slice().reverse();
-  const integrity = memoryDb.verifyAuditIntegrity();
+  // Combine session-cached organizations and memoryDb
+  const dbOrgs = memoryDb.listOrganizationsForUser(session.userId);
+  const sessionOrgs = session.organizations || [];
+
+  const orgMap = new Map<string, SessionOrg>();
+  for (const o of sessionOrgs) {
+    orgMap.set(o.id, o);
+  }
+  for (const item of dbOrgs) {
+    orgMap.set(item.org.id, {
+      id: item.org.id,
+      name: item.org.name,
+      slug: item.org.slug,
+      plan: item.org.plan,
+      role: item.role.key,
+      createdAt: item.org.createdAt.toISOString(),
+    });
+  }
+  const organizations = Array.from(orgMap.values());
+
+  // Combine session-cached audit logs and memoryDb
+  const dbLogs = memoryDb.listAuditLogs();
+  const sessionLogs = session.auditLogs || [];
+
+  const logMap = new Map<string, StoredAuditRecord>();
+  for (const l of sessionLogs) {
+    logMap.set(l.id, l);
+  }
+  for (const l of dbLogs) {
+    logMap.set(l.id, l);
+  }
+  const auditLogs = Array.from(logMap.values()).slice().reverse();
+  const integrity = verifyAuditChainIntegrity(Array.from(logMap.values()));
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -45,7 +75,7 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
               <UserCheck className="h-4 w-4 text-emerald-600" />
-              <span>{user?.email || session.email}</span>
+              <span>{session.email}</span>
             </div>
 
             <form action="/api/auth/logout" method="POST">
@@ -102,7 +132,7 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {organizations.map(({ org, role }) => (
+              {organizations.map((org) => (
                 <div
                   key={org.id}
                   className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:border-indigo-300 transition-colors dark:border-slate-800 dark:bg-slate-900"
@@ -117,7 +147,7 @@ export default async function DashboardPage() {
                       </p>
                     </div>
                     <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
-                      {role.name}
+                      {org.role.toUpperCase()}
                     </span>
                   </div>
                   <div className="mt-6 flex items-center justify-between text-xs text-slate-500 pt-4 border-t border-slate-100 dark:border-slate-800">

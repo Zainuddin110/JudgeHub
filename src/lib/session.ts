@@ -1,15 +1,27 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { StoredAuditRecord } from "@/db/audit";
 
 const SECRET = new TextEncoder().encode(
   process.env.SESSION_SECRET || "judgehub-development-session-secret-key-32chars"
 );
 const COOKIE_NAME = "judgehub_session";
 
+export interface SessionOrg {
+  id: string;
+  name: string;
+  slug: string;
+  plan: string;
+  role: string;
+  createdAt: string;
+}
+
 export interface SessionPayload {
   userId: string;
   email: string;
   name?: string | null;
+  organizations?: SessionOrg[];
+  auditLogs?: StoredAuditRecord[];
 }
 
 export async function createSessionToken(payload: SessionPayload): Promise<string> {
@@ -27,6 +39,8 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
       userId: payload.userId as string,
       email: payload.email as string,
       name: payload.name as string | null | undefined,
+      organizations: (payload.organizations as SessionOrg[]) || [],
+      auditLogs: (payload.auditLogs as StoredAuditRecord[]) || [],
     };
   } catch {
     return null;

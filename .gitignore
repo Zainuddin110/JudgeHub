@@ -11,3 +11,5 @@ coverage
 .DS_Store
 Thumbs.db
 setup-phase0.js
+
+.vercel
